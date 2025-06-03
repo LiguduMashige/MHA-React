@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "./static/css/main.757204ad.css",
-    "main.js": "./static/js/main.abbbb274.js",
-    "static/js/554.9aeafb96.chunk.js": "./static/js/554.9aeafb96.chunk.js",
-    "static/js/453.f3dbcd09.chunk.js": "./static/js/453.f3dbcd09.chunk.js",
-    "static/media/Clear_Glass_Candle_Large.JPG": "./static/media/Clear_Glass_Candle_Large.0717456f4bd676722990.JPG",
-    "index.html": "./index.html",
-    "main.757204ad.css.map": "./static/css/main.757204ad.css.map",
-    "main.abbbb274.js.map": "./static/js/main.abbbb274.js.map",
-    "453.f3dbcd09.chunk.js.map": "./static/js/453.f3dbcd09.chunk.js.map"
+    "main.css": "/MHA-React/static/css/main.a6e28a47.css",
+    "main.js": "/MHA-React/static/js/main.da5baaaa.js",
+    "static/js/554.9aeafb96.chunk.js": "/MHA-React/static/js/554.9aeafb96.chunk.js",
+    "static/js/453.f3dbcd09.chunk.js": "/MHA-React/static/js/453.f3dbcd09.chunk.js",
+    "static/media/Clear_Glass_Candle_Large.JPG": "/MHA-React/static/media/Clear_Glass_Candle_Large.0717456f4bd676722990.JPG",
+    "index.html": "/MHA-React/index.html",
+    "main.a6e28a47.css.map": "/MHA-React/static/css/main.a6e28a47.css.map",
+    "main.da5baaaa.js.map": "/MHA-React/static/js/main.da5baaaa.js.map",
+    "453.f3dbcd09.chunk.js.map": "/MHA-React/static/js/453.f3dbcd09.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.757204ad.css",
-    "static/js/main.abbbb274.js"
+    "static/css/main.a6e28a47.css",
+    "static/js/main.da5baaaa.js"
   ]
 }
