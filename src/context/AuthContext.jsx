@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { reloadImagesAfterAuthChange } from '../utils/preloadUtil';
 
 export const AuthContext = createContext();
 
@@ -19,6 +20,10 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     setCurrentUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    
+    // Force reload images after login to ensure proper caching
+    setTimeout(() => reloadImagesAfterAuthChange(), 100);
+    
     return true;
   };
 
@@ -26,6 +31,9 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('user');
+    
+    // Force reload images after logout to ensure proper caching when logging in again
+    setTimeout(() => reloadImagesAfterAuthChange(), 100);
   };
 
   // Register function

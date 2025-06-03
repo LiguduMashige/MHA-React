@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import ProductCard from '../components/products/ProductCard';
 import ProductModal from '../components/products/ProductModal';
@@ -43,7 +44,7 @@ const SearchResults = () => {
           <p>
             Try adjusting your search terms or browse our categories
           </p>
-          <a href="/" className="back-to-home">Back to Home</a>
+          <Link to="/" className="back-to-home">Back to Home</Link>
         </div>
       )}
       

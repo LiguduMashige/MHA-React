@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Auth.css';
@@ -7,6 +7,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const { login, findUserByEmail } = useContext(AuthContext);
@@ -16,13 +17,26 @@ const Login = () => {
   // Get the path the user was trying to access before being redirected to login
   const from = location.state?.from?.pathname || '/';
   
+  // Clear error when user types in fields
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+      const timer = setTimeout(() => {
+        setShowError(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
+    setShowError(false);
     setLoading(true);
     
     if (!email || !password) {
       setError('Please fill in all fields');
+      setShowError(true);
       setLoading(false);
       return;
     }
@@ -33,12 +47,14 @@ const Login = () => {
     
     if (!user) {
       setError('No account found with this email');
+      setShowError(true);
       setLoading(false);
       return;
     }
     
     if (user.password !== password) { // In real app, use proper password hashing
       setError('Incorrect password');
+      setShowError(true);
       setLoading(false);
       return;
     }
@@ -47,7 +63,7 @@ const Login = () => {
     login(user);
     setLoading(false);
     
-    // Redirect to the page they were trying to access, or home
+    // Correctly use navigate with replace to update history
     navigate(from, { replace: true });
   };
   
@@ -56,45 +72,54 @@ const Login = () => {
       <div className="auth-form-container">
         <h2>Login to Your Account</h2>
         
-        {error && <div className="auth-error">{error}</div>}
-        
         <form onSubmit={handleSubmit} className="auth-form">
+          <h1>Login</h1>
+          
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+            <label>Email</label>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (error) setShowError(false);
+              }} 
+              className={`form-control ${error && error.includes('email') ? 'input-error' : ''}`}
               required
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+            <label>Password</label>
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (error) setShowError(false);
+              }} 
+              className={`form-control ${error && error.includes('password') ? 'input-error' : ''}`}
               required
             />
+            <div className="forgot-password">
+              <Link to="/forgot-password">Forgot Password?</Link>
+            </div>
           </div>
+          
+          {showError && <div className="error-message error-bottom">{error}</div>}
           
           <button 
             type="submit" 
-            className="auth-button"
+            className="auth-button" 
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
-        </form>
-        
-        <div className="auth-links">
-          <p>
+          
+          <div className="auth-switch">
             Don't have an account? <Link to="/register">Register</Link>
-          </p>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/HeroSection.css';
 
 const heroImages = [
@@ -39,7 +40,7 @@ const HeroSection = () => {
         <div 
           key={index} 
           className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
-          style={{ backgroundImage: `url('${process.env.PUBLIC_URL}${image.src}')` }}
+          style={{ backgroundImage: `url('${formatImagePath(image.src)}')` }}
         >
           <div className="hero-content">
             <h1 className="hero-title">{image.title}</h1>

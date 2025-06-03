@@ -1,18 +1,24 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { FaHeart, FaTimes, FaMinus, FaPlus, FaCheck } from 'react-icons/fa';
+import { FaHeart, FaTimes, FaMinus, FaPlus, FaCheck, FaImage } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../../context/ShopContext';
 import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/ProductModal.css';
 
 const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
+  const navigate = useNavigate();
   const { addToCart, buyNow, favorites, toggleFavorite, products } = useContext(ShopContext);
   const [quantity, setQuantity] = useState(1);
   const [selectedScent, setSelectedScent] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [imageSrc, setImageSrc] = useState('');
+  const [imageError, setImageError] = useState(false);
+  const [loadAttempts, setLoadAttempts] = useState(0);
   const isFavorite = favorites[currentProduct?.id];
 
   // Effect to update currentProduct when initialProduct changes or products array changes
+  // Reset image loading state when modal opens with a product
   useEffect(() => {
     if (initialProduct) {
       // Find the latest version of the product from products array
@@ -22,8 +28,51 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
       } else {
         setCurrentProduct(initialProduct);
       }
+      
+      // Reset image loading state
+      setImageError(false);
+      setLoadAttempts(0);
     }
   }, [initialProduct, products]);
+  
+  // Handle image path and loading
+  useEffect(() => {
+    if (!currentProduct) return;
+    
+    if (imageError && loadAttempts < 3) {
+      // If we had an error, try different path formats
+      let newPath;
+      if (loadAttempts === 0) {
+        // First fallback: Try direct path with baseUrl
+        const isGitHub = window.location.hostname.includes('github.io');
+        const baseUrl = isGitHub ? '/MHA-React' : '';
+        newPath = `${baseUrl}${currentProduct.image.startsWith('/') ? currentProduct.image : `/${currentProduct.image}`}`;
+      } else if (loadAttempts === 1) {
+        // Second fallback: Try with category-specific folder
+        const imageName = currentProduct.image.split('/').pop();
+        const isGitHub = window.location.hostname.includes('github.io');
+        const baseUrl = isGitHub ? '/MHA-React' : '';
+        newPath = `${baseUrl}/store-img/${currentProduct.category}/${imageName}`;
+      } else {
+        // Third fallback: Try with direct filename only
+        const imageName = currentProduct.image.split('/').pop();
+        const isGitHub = window.location.hostname.includes('github.io');
+        const baseUrl = isGitHub ? '/MHA-React' : '';
+        newPath = `${baseUrl}/images/${imageName}`;
+      }
+      console.log(`Modal attempt ${loadAttempts + 1}: trying ${newPath}`);
+      setImageSrc(newPath);
+      setLoadAttempts(prev => prev + 1);
+    } else if (!imageError) {
+      // First attempt or after product change
+      const isGitHub = window.location.hostname.includes('github.io');
+      const baseUrl = isGitHub ? '/MHA-React' : '';
+      const path = currentProduct.image.startsWith('/') ? currentProduct.image : `/${currentProduct.image}`;
+      const formattedPath = `${baseUrl}${path}`;
+      console.log(`Modal initial image load: ${formattedPath}`);
+      setImageSrc(formattedPath);
+    }
+  }, [currentProduct, imageError, loadAttempts]);
   
   useEffect(() => {
     if (isOpen && currentProduct) {
@@ -80,10 +129,8 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
     const success = buyNow(currentProduct.id, quantity, selectedScent, currentProduct.medium);
     if (success) {
       onClose();
-      // Navigate to cart page after adding to cart - use relative path for GitHub Pages compatibility
-      window.location.href = window.location.pathname.includes('github.io') 
-        ? 'cart'
-        : '/cart';
+      // Navigate to cart page after adding to cart
+      navigate('/cart');
     } else {
       // Could add a visual feedback for failed add to cart
       alert('Sorry, this product is out of stock or not enough quantity is available.');
@@ -101,19 +148,15 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
 
   const handleViewCart = () => {
     onClose();
-    // Navigate to cart page - use relative path for GitHub Pages compatibility
-    window.location.href = window.location.pathname.includes('github.io') 
-      ? 'cart'
-      : '/cart';
+    // Navigate to cart page
+    navigate('/cart');
   };
 
   const handleContinueShopping = () => {
     setShowConfirmation(false);
     onClose();
-    // Navigate to home page - use relative path for GitHub Pages compatibility
-    window.location.href = window.location.pathname.includes('github.io') 
-      ? '.' 
-      : '/';
+    // Navigate to home page
+    navigate('/');
   };
 
   return (
@@ -136,7 +179,25 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
             </button>
             
             <div className="modal-content">
-              <img className="product-image" src={formatImagePath(currentProduct.image)} alt={currentProduct.name} />
+              {imageError && loadAttempts >= 3 ? (
+                <div className="image-error-container">
+                  <FaImage className="image-error-icon" size={60} />
+                  <p>Image could not be loaded</p>
+                </div>
+              ) : (
+                <img 
+                  className="product-image" 
+                  key={`modal-${currentProduct.id}-${loadAttempts}`}
+                  src={imageSrc} 
+                  alt={currentProduct.name} 
+                  onLoad={() => setImageError(false)}
+                  onError={(e) => {
+                    console.error(`Failed to load modal image (attempt ${loadAttempts}): ${imageSrc}`);
+                    e.target.onerror = null; // Prevent infinite loop
+                    setImageError(true);
+                  }}
+                />
+              )}
               
               <div className="product-details">
                 <div className="product-header">

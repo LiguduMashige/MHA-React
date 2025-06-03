@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import '../styles/Profile.css';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { currentUser, updateProfile, logout, isAuthenticated } = useContext(AuthContext);
   const [activeSection, setActiveSection] = useState('profile');
   const [expandedOrder, setExpandedOrder] = useState(null);
@@ -82,7 +83,7 @@ const Profile = () => {
   
   const handleLogout = () => {
     logout();
-    window.location.href = '/';
+    navigate('/');
   };
 
   // Redirect if not logged in

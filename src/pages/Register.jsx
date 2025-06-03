@@ -70,8 +70,6 @@ const Register = () => {
       <div className="auth-form-container">
         <h2>Create an Account</h2>
         
-        {error && <div className="auth-error">{error}</div>}
-        
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-row">
             <div className="form-group">
@@ -145,6 +143,8 @@ const Register = () => {
               required
             />
           </div>
+
+          {error && <div className="error-message error-bottom">{error}</div>}
           
           <button 
             type="submit" 

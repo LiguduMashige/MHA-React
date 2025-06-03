@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { AuthContext } from '../context/AuthContext';
+import { formatImagePath } from '../utils/pathUtils';
 import '../styles/Checkout.css';
 
 const Checkout = () => {
@@ -411,7 +412,7 @@ const Checkout = () => {
                   <div className="order-item" key={productId}>
                     <img 
                       className="item-image-small"
-                      src={product.image} 
+                      src={formatImagePath(product.image)} 
                       alt={product.name} 
                     />
                     <div className="item-info">

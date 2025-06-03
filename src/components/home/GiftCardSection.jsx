@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { ShopContext } from '../../context/ShopContext';
+import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/GiftCardSection.css';
 
 const giftCardPrices = [100, 200, 500, 1000];
@@ -98,7 +99,11 @@ const GiftCardSection = () => {
         </div>
         
         <div className="gift-image-container">
-          <img className="gift-card-image" src={giftCardProduct ? giftCardProduct.image : '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg'} alt="Gift Card" />
+          <img 
+            className="gift-card-image" 
+            src={formatImagePath(giftCardProduct ? giftCardProduct.image : '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg')} 
+            alt="Gift Card" 
+          />
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 import { ShopContext } from '../context/ShopContext';
+import { formatImagePath } from '../utils/pathUtils';
 import '../styles/Cart.css';
 
 const Cart = () => {
@@ -66,7 +67,7 @@ const Cart = () => {
                   if (typeof quantity === 'object') {
                     return Object.entries(quantity).map(([medium, mediumQuantity]) => (
                       <div className="cart-item" key={`${productId}-${scent}-${medium}`}>
-                        <img className="item-image" src={product.image} alt={product.name} />
+                        <img className="item-image" src={formatImagePath(product.image)} alt={product.name} />
                         <div className="item-details">
                           <h3 className="item-name">{product.name}</h3>
                           <div className="item-attributes">
@@ -105,7 +106,7 @@ const Cart = () => {
                     // No medium options
                     return (
                       <div className="cart-item" key={`${productId}-${scent}`}>
-                        <img className="item-image" src={product.image} alt={product.name} />
+                        <img className="item-image" src={formatImagePath(product.image)} alt={product.name} />
                         <div className="item-details">
                           <h3 className="item-name">{product.name}</h3>
                           <div className="item-attributes">

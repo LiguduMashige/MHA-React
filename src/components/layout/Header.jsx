@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaHeart, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { ShopContext } from '../../context/ShopContext';
 import { AuthContext } from '../../context/AuthContext';
+import { formatImagePath } from '../../utils/pathUtils';
 import SearchBar from '../search/SearchBar';
 import '../../styles/Header.css';
 
@@ -14,9 +15,13 @@ const Header = () => {
   return (
     <div className="header-container">
       <div className="header-top">
-        <div className="logo" onClick={() => window.location.href = '/'}>
-          <img src="/store-img/logos-img/MHA_Black_Logo_Transparent.png" alt="MHA Logo" className="logo-image" />
-        </div>
+        <Link to="/" className="logo">
+          <img 
+            src={formatImagePath("/store-img/logos-img/MHA_Black_Logo_Transparent.png")} 
+            alt="MHA Logo" 
+            className="logo-image" 
+          />
+        </Link>
 
         <SearchBar />
 
@@ -48,6 +53,7 @@ const Header = () => {
       <div className="sub-nav">
         <Link className="nav-link" to="/">Home</Link>
         <Link className="nav-link" to="/services">Services</Link>
+        <Link className="nav-link" to="/reflection">Reflection</Link>
       </div>
     </div>
   );
