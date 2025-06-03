@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { FaHeart, FaTimes, FaMinus, FaPlus, FaCheck } from 'react-icons/fa';
 import { ShopContext } from '../../context/ShopContext';
+import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/ProductModal.css';
 
 const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
@@ -79,8 +80,10 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
     const success = buyNow(currentProduct.id, quantity, selectedScent, currentProduct.medium);
     if (success) {
       onClose();
-      // Navigate to cart page after adding to cart
-      window.location.href = '/cart';
+      // Navigate to cart page after adding to cart - use relative path for GitHub Pages compatibility
+      window.location.href = window.location.pathname.includes('github.io') 
+        ? 'cart'
+        : '/cart';
     } else {
       // Could add a visual feedback for failed add to cart
       alert('Sorry, this product is out of stock or not enough quantity is available.');
@@ -98,15 +101,19 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
 
   const handleViewCart = () => {
     onClose();
-    // Navigate to cart page
-    window.location.href = '/cart';
+    // Navigate to cart page - use relative path for GitHub Pages compatibility
+    window.location.href = window.location.pathname.includes('github.io') 
+      ? 'cart'
+      : '/cart';
   };
 
   const handleContinueShopping = () => {
     setShowConfirmation(false);
     onClose();
-    // Navigate to home page
-    window.location.href = '/';
+    // Navigate to home page - use relative path for GitHub Pages compatibility
+    window.location.href = window.location.pathname.includes('github.io') 
+      ? '.' 
+      : '/';
   };
 
   return (
@@ -129,7 +136,7 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
             </button>
             
             <div className="modal-content">
-              <img className="product-image" src={currentProduct.image} alt={currentProduct.name} />
+              <img className="product-image" src={formatImagePath(currentProduct.image)} alt={currentProduct.name} />
               
               <div className="product-details">
                 <div className="product-header">
@@ -242,7 +249,7 @@ const ProductModal = ({ product: initialProduct, isOpen, onClose }) => {
           
           <div className="cart-notification-content">
             <div className="cart-product-image">
-              <img src={currentProduct.image} alt={currentProduct.name} />
+              <img src={formatImagePath(currentProduct.image)} alt={currentProduct.name} />
             </div>
             <div className="cart-product-details">
               <h3 className="cart-product-name">{currentProduct.name}</h3>

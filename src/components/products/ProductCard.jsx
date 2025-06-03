@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { ShopContext } from '../../context/ShopContext';
+import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/ProductCard.css';
 
 const ProductCard = ({ product, onClick }) => {
@@ -16,7 +17,7 @@ const ProductCard = ({ product, onClick }) => {
     <div className="card-container" onClick={onClick}>
       <div className="image-container">
         <div className="image-wrapper">
-          <img className="product-image" src={product.image} alt={product.name} />
+          <img className="product-image" src={formatImagePath(product.image)} alt={product.name} />
         </div>
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
