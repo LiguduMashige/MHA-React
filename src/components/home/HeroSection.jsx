@@ -39,7 +39,7 @@ const HeroSection = () => {
         <div 
           key={index} 
           className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
-          style={{ backgroundImage: `url(${image.src})` }}
+          style={{ backgroundImage: `url('/public${image.src}')` }}
         >
           <div className="hero-content">
             <h1 className="hero-title">{image.title}</h1>
