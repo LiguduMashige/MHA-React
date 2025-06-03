@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/MHA-React/static/css/main.fdf39c8f.css",
-    "main.js": "/MHA-React/static/js/main.8bd3bf9d.js",
+    "main.css": "/MHA-React/static/css/main.2177cd5e.css",
+    "main.js": "/MHA-React/static/js/main.db513659.js",
     "static/js/554.9aeafb96.chunk.js": "/MHA-React/static/js/554.9aeafb96.chunk.js",
     "static/js/453.f3dbcd09.chunk.js": "/MHA-React/static/js/453.f3dbcd09.chunk.js",
     "static/media/Clear_Glass_Candle_Large.JPG": "/MHA-React/static/media/Clear_Glass_Candle_Large.0717456f4bd676722990.JPG",
     "index.html": "/MHA-React/index.html",
-    "main.fdf39c8f.css.map": "/MHA-React/static/css/main.fdf39c8f.css.map",
-    "main.8bd3bf9d.js.map": "/MHA-React/static/js/main.8bd3bf9d.js.map",
+    "main.2177cd5e.css.map": "/MHA-React/static/css/main.2177cd5e.css.map",
+    "main.db513659.js.map": "/MHA-React/static/js/main.db513659.js.map",
     "453.f3dbcd09.chunk.js.map": "/MHA-React/static/js/453.f3dbcd09.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fdf39c8f.css",
-    "static/js/main.8bd3bf9d.js"
+    "static/css/main.2177cd5e.css",
+    "static/js/main.db513659.js"
   ]
 }
