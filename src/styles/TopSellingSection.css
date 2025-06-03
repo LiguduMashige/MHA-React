@@ -1,0 +1,124 @@
+/* TopSellingSection styles */
+/* Using the same layout as ProductCategory for consistency */
+.category-container {
+  margin-bottom: 3rem;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .category-header {
+    padding: 0 1rem;
+  }
+}
+
+.category-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.scroll-container {
+  position: relative;
+}
+
+.products-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 2rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.products-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@media (max-width: 768px) {
+  .products-container {
+    padding: 1rem;
+  }
+}
+
+.product-card-wrapper {
+  flex: 0 0 auto;
+  width: 200px; /* Standard width for product cards */
+  margin-right: 1rem; /* Space between cards */
+  position: relative;
+  height: auto; /* Allow height to adjust to content */
+  min-height: 320px; /* Minimum height to ensure consistency */
+}
+
+.product-card-wrapper:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 768px) {
+  .product-card-wrapper {
+    width: 180px;
+    margin-right: 1rem;
+  }
+}
+
+.ranking-number {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 40px;
+  height: 40px;
+  background-color: #1D1D1D;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  z-index: 2;
+  font-family: 'Playfair Display', serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #BDBDBD;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.scroll-button:hover {
+  background-color: #F5F5F5;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.scroll-button svg {
+  color: #1D1D1D;
+  font-size: 1rem;
+}
+
+.scroll-button.left {
+  left: 0.5rem;
+}
+
+.scroll-button.right {
+  right: 0.5rem;
+}

@@ -1,0 +1,376 @@
+/* Checkout page styles */
+.checkout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 1rem;
+  }
+  
+  .checkout-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-container {
+    padding: 0.75rem;
+  }
+  
+  .checkout-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+.checkout-content {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .checkout-content {
+    flex-direction: column-reverse;
+  }
+}
+
+.checkout-form {
+  flex: 3;
+}
+
+.checkout-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4F4F4F;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #BDBDBD;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1D1D1D;
+}
+
+.form-input.error {
+  border-color: #EB5757;
+}
+
+.form-input.error:focus {
+  border-color: #EB5757;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #BDBDBD;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  transition: border-color 0.3s;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #1D1D1D;
+}
+
+.form-select.error {
+  border-color: #EB5757;
+}
+
+.form-select.error:focus {
+  border-color: #EB5757;
+}
+
+.error-message {
+  color: #EB5757;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.tip-section {
+  margin-top: 1.5rem;
+}
+
+.tip-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.tip-options {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 576px) {
+  .tip-options {
+    flex-wrap: wrap;
+  }
+}
+
+.tip-option {
+  flex: 1;
+  background-color: white;
+  color: #1D1D1D;
+  border: 1px solid #1D1D1D;
+  padding: 0.75rem;
+  font-family: 'Roboto Mono', monospace;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tip-option:hover {
+  background-color: #F5F5F5;
+}
+
+.tip-option.selected {
+  background-color: #1D1D1D;
+  color: white;
+}
+
+.tip-option.selected:hover {
+  background-color: #1D1D1D;
+}
+
+@media (max-width: 576px) {
+  .tip-option {
+    flex: 1 0 40%;
+  }
+}
+
+.submit-button {
+  width: 100%;
+  background-color: #1D1D1D;
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #282828;
+}
+
+.submit-button:disabled {
+  background-color: #BDBDBD;
+  cursor: not-allowed;
+}
+
+.order-summary {
+  flex: 2;
+  background-color: #F9F9F9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  align-self: flex-start;
+  position: sticky;
+  top: 2rem;
+  max-width: 400px;
+}
+
+@media (max-width: 992px) {
+  .order-summary {
+    max-width: 100%;
+    position: static;
+  }
+}
+
+.summary-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.order-items {
+  margin-bottom: 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.item-image-small {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 1rem;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name-small {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.item-quantity {
+  color: #4F4F4F;
+  font-size: 0.8rem;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.item-price-small {
+  font-family: 'Roboto Mono', monospace;
+  color: #1D1D1D;
+  font-weight: 500;
+}
+
+.summary-divider {
+  border: none;
+  border-top: 1px solid #EFEFEF;
+  margin: 1.5rem 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.summary-label {
+  color: #4F4F4F;
+}
+
+.summary-value {
+  color: #1D1D1D;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-family: 'Roboto Mono', monospace;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #EFEFEF;
+  font-weight: 500;
+}
+
+.total-label {
+  color: #1D1D1D;
+  font-size: 1.1rem;
+}
+
+.total-value {
+  color: #1D1D1D;
+  font-size: 1.1rem;
+}
+
+.success-message {
+  text-align: center;
+  padding: 3rem;
+  background-color: #F9F9F9;
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+@media (max-width: 768px) {
+  .success-message {
+    padding: 2rem;
+    margin: 1.5rem auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-message {
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+}
+
+.success-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.success-text {
+  color: #4F4F4F;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-family: 'Roboto Mono', monospace;
+}

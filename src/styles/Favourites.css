@@ -1,0 +1,75 @@
+/* Favourites page styles */
+.favourites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .favourites-container {
+    padding: 1rem;
+  }
+}
+
+.page-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recommendations-section {
+  margin-top: 4rem;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: #F9F9F9;
+  border-radius: 8px;
+}
+
+.empty-text {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.empty-subtext {
+  color: #4F4F4F;
+  font-family: 'Roboto Mono', monospace;
+  line-height: 1.6;
+}

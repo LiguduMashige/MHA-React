@@ -1,0 +1,289 @@
+/* Cart styles */
+.cart-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .cart-container {
+    padding: 1rem;
+  }
+}
+
+.cart-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin-bottom: 2rem;
+}
+
+.cart-content {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .cart-content {
+    flex-direction: column;
+  }
+}
+
+.cart-items-container {
+  flex: 2;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+@media (max-width: 768px) {
+  .cart-item {
+    flex-wrap: wrap;
+  }
+}
+
+.item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .item-image {
+    width: 80px;
+    height: 80px;
+    margin-right: 1rem;
+  }
+}
+
+.item-details {
+  flex: 2;
+}
+
+.item-name {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.item-attributes {
+  color: #4F4F4F;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Roboto Mono', monospace;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.attribute-label {
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.attribute-separator {
+  margin: 0 0.5rem;
+  color: #BDBDBD;
+}
+
+.message-box {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f9f5f2;
+  border-left: 3px solid #C39A7A;
+  border-radius: 4px;
+  font-style: italic;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.gift-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: #C39A7A;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.item-price {
+  color: #1D1D1D;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  margin: 0 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .quantity-controls {
+    margin: 1rem 0;
+  }
+}
+
+.quantity-button {
+  background-color: white;
+  border: 1px solid #BDBDBD;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.quantity-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-button:hover:not(:disabled) {
+  background-color: #F5F5F5;
+}
+
+.quantity-button svg {
+  font-size: 0.75rem;
+}
+
+.quantity-value {
+  width: 40px;
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.item-subtotal {
+  flex: 1;
+  text-align: right;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+  color: #1D1D1D;
+}
+
+@media (max-width: 768px) {
+  .item-subtotal {
+    margin-left: auto;
+  }
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #EB5757;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.3s;
+}
+
+.remove-button:hover {
+  color: #CF4040;
+}
+
+.cart-summary {
+  flex: 1;
+  background-color: #F9F9F9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  align-self: flex-start;
+  position: sticky;
+  top: 2rem;
+}
+
+.summary-title {
+  font-family: 'Playfair Display', serif;
+  color: #1D1D1D;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.summary-label {
+  color: #4F4F4F;
+}
+
+.summary-value {
+  color: #1D1D1D;
+  font-weight: 500;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #EFEFEF;
+  font-weight: 500;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.total-label {
+  color: #1D1D1D;
+  font-size: 1.1rem;
+}
+
+.total-value {
+  color: #1D1D1D;
+  font-size: 1.1rem;
+}
+
+.checkout-button {
+  width: 100%;
+  background-color: #1D1D1D;
+  color: white;
+  border: none;
+  padding: 0.75rem 0;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 1.5rem 0;
+}
+
+.checkout-button:hover {
+  background-color: #282828;
+}
+
+.continue-shopping-link {
+  display: block;
+  text-align: center;
+  color: #1D1D1D;
+  text-decoration: none;
+  font-family: 'Roboto Mono', monospace;
+  transition: color 0.3s;
+}
+
+.continue-shopping-link:hover {
+  color: #C39A7A;
+}
+
+.empty-cart-message {
+  text-align: center;
+  padding: 3rem;
+}
+
+.empty-cart-text {
+  font-family: 'Playfair Display', serif;
+  color: #4F4F4F;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}

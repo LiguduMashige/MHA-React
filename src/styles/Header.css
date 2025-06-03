@@ -1,0 +1,142 @@
+/* Header styles */
+.header-container {
+  width: 100%;
+  border-bottom: 1px solid #EFEFEF;
+  position: sticky;
+  top: 0;
+  background-color: rgb(228, 226, 223);
+  z-index: 10;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+  .header-top {
+    padding: 0.75rem;
+  }
+  
+  .logo-image {
+    height: 40px;
+  }
+  
+  .nav-icon-link {
+    margin-left: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-top {
+    padding: 0.5rem;
+  }
+  
+  .logo-image {
+    height: 35px;
+  }
+  
+  .nav-icon-link {
+    margin-left: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+.logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+}
+
+.nav-icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1.5rem;
+  position: relative;
+  color: #4F4F4F;
+  font-size: 1.2rem;
+}
+
+.nav-icon-link:hover {
+  color: #C39A7A;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #C39A7A;
+  color: white;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sub-nav {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid #EFEFEF;
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sub-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-link {
+  margin: 0 1.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #4F4F4F;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #C39A7A;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #C39A7A;
+  transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .nav-link {
+    margin: 0 1rem;
+    font-size: 0.8rem;
+  }
+}
