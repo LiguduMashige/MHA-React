@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaMinus, FaPlus, FaImage } from 'react-icons/fa';
+import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 import { ShopContext } from '../context/ShopContext';
 import '../styles/Cart.css';
 
