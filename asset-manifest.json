@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/MHA-React/static/css/main.04ddf82b.css",
+    "main.js": "/MHA-React/static/js/main.5f5fca19.js",
+    "static/js/554.63160753.chunk.js": "/MHA-React/static/js/554.63160753.chunk.js",
+    "static/js/453.f3dbcd09.chunk.js": "/MHA-React/static/js/453.f3dbcd09.chunk.js",
+    "index.html": "/MHA-React/index.html",
+    "main.04ddf82b.css.map": "/MHA-React/static/css/main.04ddf82b.css.map",
+    "main.5f5fca19.js.map": "/MHA-React/static/js/main.5f5fca19.js.map",
+    "453.f3dbcd09.chunk.js.map": "/MHA-React/static/js/453.f3dbcd09.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.04ddf82b.css",
+    "static/js/main.5f5fca19.js"
+  ]
+}
