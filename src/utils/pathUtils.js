@@ -33,26 +33,24 @@ export const getBaseUrl = () => {
 export const formatImagePath = (imagePath) => {
   if (!imagePath) return '';
   
-  const isGitHubPages = window.location.hostname.includes('github.io');
-  const baseUrl = getBaseUrl();
-  
-  if (isGitHubPages) {
-    // For GitHub Pages deployment
-    if (imagePath.startsWith('/')) {
-      // Convert absolute path to be relative to the repo base
-      return `${baseUrl}/${imagePath.substring(1)}`;
-    } else if (!imagePath.includes('://') && !imagePath.startsWith(baseUrl)) {
-      // If it's already a relative path but doesn't include the baseUrl
-      return `${baseUrl}/${imagePath}`;
-    }
-  } else {
-    // For local development
-    if (!imagePath.startsWith('/') && !imagePath.includes('://')) {
-      return `/${imagePath}`;
-    }
+  // Handle absolute URLs
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
   }
   
-  return imagePath;
+  // Remove 'public/' prefix if it exists
+  const cleanedPath = imagePath.replace(/^public\/?/, '');
+  
+  // Check if we're on GitHub Pages
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  
+  if (isGitHubPages) {
+    // Add GitHub Pages prefix with repo name
+    return cleanedPath.startsWith('/') ? `/MHA-React${cleanedPath}` : `/MHA-React/${cleanedPath}`;
+  }
+  
+  // For local development, just ensure a leading slash
+  return cleanedPath.startsWith('/') ? cleanedPath : `/${cleanedPath}`;
 };
 
 /**

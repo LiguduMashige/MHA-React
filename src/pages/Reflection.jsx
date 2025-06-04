@@ -53,15 +53,6 @@ const Reflection = () => {
           custom data for products like furniture and lamps, which she plans to add to her business 
           in the future.
         </p>
-        
-        <div className="reflection-images">
-          <div className="image-container">
-            <img src={`${window.location.hostname.includes('github.io') ? '/MHA-React' : ''}/store-img/reflection-img/Home_Draft.png`} alt="Home Page Draft" />
-          </div>
-          <div className="image-container">
-            <img src={`${window.location.hostname.includes('github.io') ? '/MHA-React' : ''}/store-img/reflection-img/Products_Draft.png`} alt="Products Page Draft" />
-          </div>
-        </div>
       </section>
 
       <section className="reflection-section">

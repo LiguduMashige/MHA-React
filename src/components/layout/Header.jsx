@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaHeart, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { ShopContext } from '../../context/ShopContext';
 import { AuthContext } from '../../context/AuthContext';
-import { formatImagePath } from '../../utils/pathUtils';
+// No longer need formatImagePath as we're using direct paths with fallbacks
 import SearchBar from '../search/SearchBar';
 import '../../styles/Header.css';
 
@@ -17,9 +17,14 @@ const Header = () => {
       <div className="header-top">
         <Link to="/" className="logo">
           <img 
-            src={formatImagePath("/store-img/logos-img/MHA_Black_Logo_Transparent.png")} 
+            src="/store-img/logos-img/MHA_Black_Logo_Transparent.png" 
             alt="MHA Logo" 
-            className="logo-image" 
+            className="logo-image"
+            onError={(e) => {
+              console.log('Trying fallback logo path');
+              e.target.onerror = null; // Prevent infinite loop
+              e.target.src = '/MHA-React/store-img/logos-img/MHA_Black_Logo_Transparent.png';
+            }}
           />
         </Link>
 

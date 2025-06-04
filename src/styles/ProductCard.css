@@ -4,13 +4,14 @@
   flex-direction: column;
   width: 100%;
   border-radius: 8px;
-  overflow: visible; /* Changed from hidden to visible to prevent content cutoff */
+  overflow: hidden; /* Changed back to hidden for clean edges */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  margin: 0 0.5rem;
+  margin: 0.5rem;
   position: relative;
-  background-color: #e3e3e3;
+  background-color: #ffffff;
   height: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .card-container:hover {
@@ -24,7 +25,7 @@
   overflow: hidden;
   border-radius: 8px 8px 0 0;
   margin-bottom: 0;
-  background-color: #e3e3e3; /* Match the updated card container background */
+  background-color: #f8f8f8;
 }
 
 .image-wrapper {
@@ -33,32 +34,43 @@
   left: 0;
   width: 100%;
   height: 100%;
+  padding: 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-/* This only applies to product cards on home page, not modal */
+/* This applies to product cards on all pages, not modal */
 .card-container .product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Reverted to contain to show full image and match screenshot */
-  transition: transform 0.5s ease;
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
   border-radius: 8px 8px 0 0;
-  background-color: #f9f9f9; /* Added light background to show image boundaries, as in screenshot */
+  background-color: #f8f8f8;
+  padding: 5%;
+  display: block !important; /* Force display */
 }
 
 /* Image error fallback styling */
 .image-error-fallback {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  background-color: #f0f0f0;
-  color: #888;
+  background-color: #ffffff;
+  color: #999;
+}
+
+.fallback-image {
+  width: 60%;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.8;
   border-radius: 8px 8px 0 0;
 }
 
@@ -82,18 +94,24 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #9B8181;
+  background: rgba(155, 129, 129, 0.9); /* More visible semi-transparent background */
   border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  width: 40px; /* Increased size */
+  height: 40px; /* Increased size */
+  display: flex !important; /* Force display */
+  visibility: visible !important; /* Always visible */
+  opacity: 1 !important; /* Ensure full opacity */
+  z-index: 200 !important; /* Ensure it's above all other elements */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Enhanced shadow for better visibility */
+  pointer-events: auto !important; /* Make sure it's clickable */
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
-  z-index: 2; /* Increased z-index to ensure it's always visible */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
+  z-index: 10; /* Higher z-index to ensure it's always on top */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow for better visibility */
+  opacity: 0.9; /* Slightly transparent by default */
 }
 
 .favorite-button svg {
@@ -102,7 +120,9 @@
 }
 
 .favorite-button.active svg {
-  color: #EB5757;
+  color: #D06262;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+  transform: scale(1.05);
 }
 
 .favorite-button:not(.active) svg {
@@ -118,12 +138,13 @@
 }
 
 .product-info {
-  padding: 8px 12px 12px;
+  padding: 12px 15px;
   margin-top: 0;
-  background-color: #eeeded;
+  background-color: #ffffff;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  border-top: 1px solid #f0f0f0;
 }
 
 .product-name {

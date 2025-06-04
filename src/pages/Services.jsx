@@ -39,6 +39,8 @@ const Services = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   
+  // We're using heroSectionStyle below, so no need for this variable
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -91,9 +93,16 @@ const Services = () => {
     }, 3000);
   };
   
+  // Define hero section style with direct image path
+  const heroSectionStyle = {
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${process.env.PUBLIC_URL}/store-img/candles-img/Clear_Glass_Candle_Large.JPG)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center'
+  };
+
   return (
     <div className="services-container">
-      <section className="hero-section">
+      <section className="hero-section" style={heroSectionStyle}>
         <div className="hero-content">
           <h1 className="hero-title">Our Services</h1>
           <p className="hero-description">

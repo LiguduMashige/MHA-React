@@ -3,14 +3,99 @@
  * Enhanced to handle authentication state changes
  */
 
-import { formatImagePath } from './pathUtils';
+// No imports needed
 
 // Cache of already preloaded images to prevent duplicate loads
 const preloadedImages = new Set();
 
 /**
+ * Add a loaded image path to local cache
+ */
+const addToCache = (originalPath, successfulPath) => {
+  preloadedImages.add(originalPath);
+  try {
+    const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '{}');
+    loadedImages[originalPath] = successfulPath;
+    sessionStorage.setItem('loadedImages', JSON.stringify(loadedImages));
+  } catch (e) {
+    console.error('Error storing loaded image path:', e);
+  }
+};
+
+/**
+ * Get a cached image path
+ */
+const getFromCache = (originalPath) => {
+  if (preloadedImages.has(originalPath)) {
+    try {
+      const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '{}');
+      return loadedImages[originalPath] || null;
+    } catch (e) {
+      console.error('Error retrieving cached image path:', e);
+    }
+  }
+  return null;
+};
+
+/**
+ * Preloads an image and returns a promise that resolves when the image is loaded
+ * @param {string} imagePath - The path to the image to preload
+ * @returns {Promise} A promise that resolves when the image is loaded
+ */
+const preloadImage = (imagePath) => {
+  return new Promise((resolve) => {
+    // If image is already cached in sessionStorage, resolve immediately
+    const cachedImage = getFromCache(imagePath);
+    if (cachedImage) {
+      console.log(`Image already cached: ${imagePath}`);
+      resolve(cachedImage);
+      return;
+    }
+
+    // Always try both paths (with and without MHA-React prefix)
+    const tryPaths = [
+      // Standard path (works in local dev)
+      imagePath.startsWith('/') ? imagePath : `/${imagePath}`,
+      // GitHub Pages path
+      imagePath.startsWith('/') ? `/MHA-React${imagePath}` : `/MHA-React/${imagePath}`
+    ];
+    
+    // Try loading with each path in sequence
+    let pathIndex = 0;
+    
+    const tryNextPath = () => {
+      if (pathIndex >= tryPaths.length) {
+        console.warn(`Could not load image: ${imagePath}, but continuing anyway`);
+        // Instead of rejecting, resolve with null to prevent app from crashing
+        resolve(null);
+        return;
+      }
+      
+      const currentPath = tryPaths[pathIndex];
+      const img = new Image();
+      
+      img.onload = () => {
+        console.log(`Successfully loaded image: ${currentPath}`);
+        addToCache(imagePath, currentPath);
+        resolve(currentPath);
+      };
+      
+      img.onerror = () => {
+        console.log(`Failed to load image with path: ${currentPath}, trying next path...`);
+        pathIndex++;
+        tryNextPath();
+      };
+      
+      img.src = currentPath;
+    };
+    
+    // Start the loading process
+    tryNextPath();
+  });
+};
+
+/**
  * Preloads critical images to ensure they're cached
- * Uses multiple strategies to maximize image loading success
  * @param {string[]} imagePaths - Array of image paths to preload
  * @returns {Promise} Promise that resolves when all images are loaded
  */
@@ -18,79 +103,21 @@ export const preloadCriticalImages = (imagePaths) => {
   // First clear the cache to ensure fresh loading after auth changes
   clearImageCache();
   
-  // Check if we're on GitHub Pages
-  const isGitHub = window.location.hostname.includes('github.io');
-  const baseUrl = isGitHub ? '/MHA-React' : '';
-  
+  // Use Promise.allSettled instead of Promise.all to continue even if some images fail
   const imagePromises = imagePaths.map(path => {
-    // Skip already preloaded images in same session
-    if (preloadedImages.has(path)) {
-      return Promise.resolve(path);
-    }
-
-    return new Promise((resolve) => {
-      // Format path with baseUrl for GitHub Pages
-      const directPath = path.startsWith('/') ? `${baseUrl}${path}` : `${baseUrl}/${path}`;
-      
-      // Try multiple path formats to ensure loading success
-      const tryLoad = (imgPath, attemptsLeft = 3) => {
-        if (attemptsLeft <= 0) {
-          console.warn(`Failed to preload image after multiple attempts: ${path}`);
-          resolve(null);
-          return;
-        }
-        
-        const img = new Image();
-        img.crossOrigin = 'anonymous'; // Allow cross-origin loading
-        
-        img.onload = () => {
-          console.log(`Successfully preloaded image: ${imgPath}`);
-          preloadedImages.add(path); // Mark as preloaded
-          
-          // Store successfully loaded URLs in sessionStorage for persistence across page refreshes
-          try {
-            const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '[]');
-            if (!loadedImages.includes(path)) {
-              loadedImages.push(path);
-              sessionStorage.setItem('loadedImages', JSON.stringify(loadedImages));
-            }
-          } catch (e) {
-            console.error('Error storing loaded image paths:', e);
-          }
-          
-          resolve(path);
-        };
-        
-        img.onerror = () => {
-          console.warn(`Failed to preload image: ${imgPath}, attempts left: ${attemptsLeft-1}`);
-          
-          let alternativePath;
-          if (attemptsLeft === 3) {
-            // First fallback: try without baseUrl if we started with it, or with it if we didn't
-            alternativePath = isGitHub ? 
-              (path.startsWith('/') ? path.substring(1) : `/${path}`) : 
-              directPath;
-          } else if (attemptsLeft === 2) {
-            // Second fallback: try with filename only in various directory patterns
-            const filename = path.split('/').pop();
-            alternativePath = `${baseUrl}/store-img/${filename}`;
-          } else {
-            // Final attempt: try direct images folder
-            const filename = path.split('/').pop();
-            alternativePath = `${baseUrl}/images/${filename}`;
-          }
-          
-          setTimeout(() => tryLoad(alternativePath, attemptsLeft - 1), 300);
-        };
-        
-        img.src = imgPath;
-      };
-      
-      tryLoad(directPath);
+    // Wrap each preload operation to catch any unexpected errors
+    return preloadImage(path).catch(error => {
+      console.warn(`Failed to preload image ${path}: ${error.message}`);
+      return null; // Return null instead of rejecting to prevent app crashing
     });
   });
-
-  return Promise.all(imagePromises);
+  
+  return Promise.allSettled(imagePromises).then(results => {
+    const succeeded = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
+    const failed = results.length - succeeded;
+    console.log(`Image preloading complete. Success: ${succeeded}, Failed: ${failed}`);
+    return results.map(r => r.status === 'fulfilled' ? r.value : null);
+  });
 };
 
 /**
@@ -108,8 +135,8 @@ export const clearImageCache = () => {
  */
 export const initImageCache = () => {
   try {
-    const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '[]');
-    loadedImages.forEach(path => preloadedImages.add(path));
+    const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '{}');
+    Object.keys(loadedImages).forEach(path => preloadedImages.add(path));
     console.log(`Restored ${preloadedImages.size} cached image paths from session`);
   } catch (e) {
     console.error('Error restoring image cache:', e);
@@ -120,32 +147,17 @@ export const initImageCache = () => {
  * Returns a list of critical images that should be preloaded for the app
  * Includes product images and UI elements
  */
-export const getCriticalImages = () => [
-  // Logos and branding
-  '/store-img/logos-img/MHA_Black_Logo_Transparent.png',
-  '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg',
-  
-  // Hero images
-  '/store-img/hero-img/Luxury_Candle_Collection.jpg',
-  '/store-img/hero-img/Reed_Diffuser_Collection.jpg',
-  '/store-img/hero-img/Statement_Furniture.jpg',
-  
-  // Common product images - add all variations and path types for maximum compatibility
-  '/store-img/candles/candle-1.jpg',
-  'store-img/candles/candle-1.jpg',
-  '/store-img/candles/candle-2.jpg',
-  'store-img/candles/candle-2.jpg',
-  '/store-img/candles/candle-3.jpg',
-  '/store-img/diffusers/diffuser-1.jpg',
-  'store-img/diffusers/diffuser-1.jpg',
-  '/store-img/diffusers/diffuser-2.jpg',
-  '/store-img/gift-cards/gift-card-1.jpg',
-  'store-img/gift-cards/gift-card-1.jpg',
-  '/store-img/furniture/furniture-1.jpg',
-  'store-img/furniture/furniture-1.jpg',
-  '/store-img/wall-art/wall-art-1.jpg',
-  '/store-img/incense/incense-1.jpg'
-];
+export const getCriticalImages = () => {
+  // Keep the critical images list minimal to reduce errors
+  // Only include images that are absolutely critical for first render
+  return [
+    // Only include the logo used in the Header component fallback
+    '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg',
+    
+    // Skip other preloads - individual components will handle their own images
+    // and we've added proper fallbacks in the ProductCard component
+  ];
+};
 
 /**
  * Force reload all critical images after auth state changes
@@ -164,24 +176,24 @@ export const reloadImagesAfterAuthChange = () => {
  */
 export const getReliableImagePath = (originalPath) => {
   try {
-    const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '[]');
+    const loadedImages = JSON.parse(sessionStorage.getItem('loadedImages') || '{}');
     
     // Check if we've successfully loaded this exact path before
-    if (loadedImages.includes(originalPath)) {
-      return formatImagePath(originalPath);
+    if (loadedImages[originalPath]) {
+      return loadedImages[originalPath];
     }
     
     // Try to match the filename part
     const filename = originalPath.split('/').pop();
-    const matchingPath = loadedImages.find(path => path.includes(filename));
-    
-    if (matchingPath) {
-      return formatImagePath(matchingPath);
+    for (const [path, cachedPath] of Object.entries(loadedImages)) {
+      if (path.includes(filename) || cachedPath.includes(filename)) {
+        return cachedPath;
+      }
     }
   } catch (e) {
     console.error('Error getting reliable image path:', e);
   }
   
-  // Fall back to standard formatting
-  return formatImagePath(originalPath);
+  // Fall back to standard formatting - ensure leading slash
+  return originalPath.startsWith('/') ? originalPath : `/${originalPath}`;
 };

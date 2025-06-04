@@ -41,21 +41,57 @@ export const ShopContextProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
-  // Initialize cart items
+  // Initialize cart items - separated from products to avoid dependency issues
   useEffect(() => {
     const storedCart = localStorage.getItem('cartItems');
-    const storedFavorites = localStorage.getItem('favorites');
     
     if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+      // Parse the stored cart data and validate it
+      try {
+        const parsedCart = JSON.parse(storedCart);
+        // Check if we have a valid cart object
+        if (parsedCart && typeof parsedCart === 'object') {
+          console.log('Restored cart from localStorage:', parsedCart);
+          setCartItems(parsedCart);
+        } else {
+          // Invalid format, start with empty cart
+          console.warn('Invalid cart format in localStorage');
+          setCartItems({});
+        }
+      } catch (e) {
+        console.error('Error parsing cart data:', e);
+        // If there's an error parsing, start with empty cart
+        localStorage.removeItem('cartItems');
+        setCartItems({});
+      }
     } else {
-      // Start with an empty cart
+      // No stored cart, start with an empty cart
       setCartItems({});
     }
-
+  }, []); // No dependencies to ensure it only runs once on initial load
+  
+  // Initialize favorites - separated from products to avoid dependency issues
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem('favorites');
+    
     if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
+      try {
+        const parsedFavorites = JSON.parse(storedFavorites);
+        if (parsedFavorites && typeof parsedFavorites === 'object') {
+          console.log('Restored favorites from localStorage');
+          setFavorites(parsedFavorites);
+        } else {
+          initializeEmptyFavorites();
+        }
+      } catch (e) {
+        console.error('Error parsing favorites data:', e);
+        initializeEmptyFavorites();
+      }
     } else {
+      initializeEmptyFavorites();
+    }
+    
+    function initializeEmptyFavorites() {
       const initialFavorites = {};
       products.forEach((product) => {
         initialFavorites[product.id] = false;
@@ -66,16 +102,20 @@ export const ShopContextProvider = ({ children }) => {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (Object.keys(cartItems).length > 0) {
+    try {
+      // Always save cart state, even if empty
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      console.log('Saved cart to localStorage:', Object.keys(cartItems).length ? cartItems : 'empty cart');
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
     }
   }, [cartItems]);
 
   // Save favorites to localStorage whenever it changes
   useEffect(() => {
-    if (Object.keys(favorites).length > 0) {
-      localStorage.setItem('favorites', JSON.stringify(favorites));
-    }
+    // Always save favorites, even if empty
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    console.log('Saved favorites to localStorage');
   }, [favorites]);
 
   // Search functionality
@@ -229,15 +269,67 @@ export const ShopContextProvider = ({ children }) => {
   };
 
   // Remove from cart function
-  const removeFromCart = (productId) => {
-    // Remove from cart without restoring stock
-    // This simulates a real e-commerce site where stock is reduced when added to cart
-    const updatedCart = { ...cartItems };
-    delete updatedCart[productId];
+  const removeFromCart = (productId, scent = null, medium = null) => {
+    // If no scent/medium specified, remove the entire product
+    if (!scent) {
+      const updatedCart = { ...cartItems };
+      delete updatedCart[productId];
+      
+      // Update cart state (localStorage update happens in useEffect)
+      setCartItems(updatedCart);
+      return;
+    }
     
-    // Update cart state and localStorage
+    // Handle removing specific scent/medium combinations
+    const updatedCart = { ...cartItems };
+    const item = updatedCart[productId];
+    
+    if (!item || !item.scentQuantities || !item.scentQuantities[scent]) {
+      console.warn('Attempted to remove non-existent item variation');
+      return;
+    }
+    
+    // If medium is specified, remove just that medium from the scent
+    if (medium && typeof item.scentQuantities[scent] === 'object') {
+      const updatedScentQuantities = { ...item.scentQuantities };
+      const updatedMediums = { ...updatedScentQuantities[scent] };
+      
+      delete updatedMediums[medium];
+      
+      // If no more mediums for this scent, remove the scent
+      if (Object.keys(updatedMediums).length === 0) {
+        delete updatedScentQuantities[scent];
+      } else {
+        updatedScentQuantities[scent] = updatedMediums;
+      }
+      
+      // If no more scents, remove the product
+      if (Object.keys(updatedScentQuantities).length === 0) {
+        delete updatedCart[productId];
+      } else {
+        updatedCart[productId] = {
+          ...item,
+          scentQuantities: updatedScentQuantities
+        };
+      }
+    } else {
+      // Remove the entire scent
+      const updatedScentQuantities = { ...item.scentQuantities };
+      delete updatedScentQuantities[scent];
+      
+      // If no more scents, remove the product
+      if (Object.keys(updatedScentQuantities).length === 0) {
+        delete updatedCart[productId];
+      } else {
+        updatedCart[productId] = {
+          ...item,
+          scentQuantities: updatedScentQuantities
+        };
+      }
+    }
+    
+    // Update cart state (localStorage update happens in useEffect)
     setCartItems(updatedCart);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
   };
 
   // Toggle favorite status

@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaMinus, FaPlus, FaImage } from 'react-icons/fa';
 import { ShopContext } from '../context/ShopContext';
-import { formatImagePath } from '../utils/pathUtils';
 import '../styles/Cart.css';
 
 const Cart = () => {
@@ -17,6 +16,19 @@ const Cart = () => {
   
   const cartTotal = getCartTotal();
   const hasItems = Object.keys(cartItems).length > 0;
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  
+  // Helper function to generate proper image paths for products
+  const generateImagePath = (imagePath) => {
+    if (!imagePath) return '';
+    
+    // Clean the original path by removing any 'public/' prefix
+    const cleanedPath = imagePath.replace(/^public\/?/, '');
+    
+    // Create the correct path based on environment
+    const baseUrl = isGitHubPages ? '/MHA-React' : '';
+    return `${baseUrl}/${cleanedPath}`;
+  };
   
   const handleQuantityChange = (productId, scent, medium, amount) => {
     const item = cartItems[productId];
@@ -67,7 +79,16 @@ const Cart = () => {
                   if (typeof quantity === 'object') {
                     return Object.entries(quantity).map(([medium, mediumQuantity]) => (
                       <div className="cart-item" key={`${productId}-${scent}-${medium}`}>
-                        <img className="item-image" src={formatImagePath(product.image)} alt={product.name} />
+                        <img 
+  className="item-image" 
+  src={generateImagePath(product.image)} 
+  alt={product.name} 
+  onError={(e) => {
+    console.error(`Failed to load cart image: ${e.target.src}`);
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = isGitHubPages ? '/MHA-React/images/product-placeholder.jpg' : '/images/product-placeholder.jpg';
+  }}
+/>
                         <div className="item-details">
                           <h3 className="item-name">{product.name}</h3>
                           <div className="item-attributes">
@@ -106,7 +127,16 @@ const Cart = () => {
                     // No medium options
                     return (
                       <div className="cart-item" key={`${productId}-${scent}`}>
-                        <img className="item-image" src={formatImagePath(product.image)} alt={product.name} />
+                        <img 
+  className="item-image" 
+  src={generateImagePath(product.image)} 
+  alt={product.name} 
+  onError={(e) => {
+    console.error(`Failed to load cart image: ${e.target.src}`);
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = isGitHubPages ? '/MHA-React/images/product-placeholder.jpg' : '/images/product-placeholder.jpg';
+  }}
+/>
                         <div className="item-details">
                           <h3 className="item-name">{product.name}</h3>
                           <div className="item-attributes">
@@ -146,7 +176,16 @@ const Cart = () => {
                 return (
                   <div className="cart-item" key={productId}>
                     {isGiftCard && <span className="gift-label">Gift Card</span>}
-                    <img className="item-image" src={product.image || "/images/gift-card.jpg"} alt={product.name} />
+                    <img 
+  className="item-image" 
+  src={generateImagePath(product.image) || (isGitHubPages ? '/MHA-React/images/gift-card.jpg' : '/images/gift-card.jpg')} 
+  alt={product.name} 
+  onError={(e) => {
+    console.error(`Failed to load cart image: ${e.target.src}`);
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = isGitHubPages ? '/MHA-React/images/product-placeholder.jpg' : '/images/product-placeholder.jpg';
+  }}
+/>
                     <div className="item-details">
                       <h3 className="item-name">{product.name}</h3>
                       <div className="item-attributes">

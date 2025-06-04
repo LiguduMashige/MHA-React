@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { ShopContext } from '../../context/ShopContext';
-import { formatImagePath } from '../../utils/pathUtils';
 import '../../styles/GiftCardSection.css';
 
 const giftCardPrices = [100, 200, 500, 1000];
@@ -13,6 +12,8 @@ const GiftCardSection = () => {
   
   // Find gift card product - ensure we only use the one with id 59 which is at the bottom of the page
   const giftCardProduct = products.find(product => product.category === 'gift' && product.id === 59);
+  
+  // Note: We'll use a direct approach for the gift card image loading
   
   const handleAddToCart = () => {
     if (giftCardProduct) {
@@ -101,8 +102,18 @@ const GiftCardSection = () => {
         <div className="gift-image-container">
           <img 
             className="gift-card-image" 
-            src={formatImagePath(giftCardProduct ? giftCardProduct.image : '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg')} 
+            src={window.location.hostname.includes('github.io') ? 
+              "/MHA-React/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg" : 
+              "/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg"}
             alt="Gift Card" 
+            onError={(e) => {
+              console.error('Failed to load gift card image');
+              // Try other path format as fallback
+              const isGitHubPath = e.target.src.includes('MHA-React');
+              e.target.src = isGitHubPath ? 
+                '/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg' : 
+                '/MHA-React/store-img/logos-img/MHA_Gold_Logo_White_Background.jpg';
+            }}
           />
         </div>
       </div>

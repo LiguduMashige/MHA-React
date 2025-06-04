@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { getBaseUrl } from './utils/pathUtils';
 import { preloadCriticalImages, getCriticalImages, initImageCache } from './utils/preloadUtil';
 import './App.css';
@@ -27,14 +27,19 @@ import Reflection from './pages/Reflection';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+
   useEffect(() => {
     // Initialize image cache from sessionStorage first
     initImageCache();
     
     // Then preload critical images to ensure they're cached
     preloadCriticalImages(getCriticalImages())
-      .then(() => console.log('Critical images preloaded successfully'))
-      .catch(error => console.error('Error preloading images:', error));
+      .then(() => {
+        console.log('Critical images preloaded successfully');
+      })
+      .catch(error => {
+        console.error('Error preloading images:', error);
+      });
       
     // Add event listener for page visibility changes to reload images when user returns to tab
     const handleVisibilityChange = () => {
@@ -52,6 +57,12 @@ function App() {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
+    // Force the initial loading of the home page
+    if (window.location.pathname === getBaseUrl() || window.location.pathname === getBaseUrl() + '/') {
+      const event = new Event('load');
+      window.dispatchEvent(event);
+    }
+    
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -63,7 +74,11 @@ function App() {
         <Router basename={getBaseUrl()}>
           <Layout>
             <Routes>
-              <Route path="/" element={<Home />} />
+              {/* Force refresh of the home route when directly accessing it */}
+              <Route 
+                path="/" 
+                element={<Home key={window.location.pathname === getBaseUrl() || window.location.pathname === getBaseUrl() + '/' ? 'home-fresh' : 'home'} />}
+              />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
               <Route path="/favourites" element={<Favourites />} />
@@ -73,6 +88,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/reflection" element={<Reflection />} />
+              {/* Add a catch-all route to redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
         </Router>

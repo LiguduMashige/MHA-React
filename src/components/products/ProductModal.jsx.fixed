@@ -1,0 +1,406 @@
+import React, { useState, useContext, useEffect, useCallback, useRef } from 'react';
+import { FaHeart, FaTimes, FaMinus, FaPlus, FaCheck, FaImage } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { ShopContext } from '../../context/ShopContext';
+import { saveModalState, getModalState, clearModalState } from '../../utils/statePersistence';
+import '../../styles/ProductModal.css';
+
+const ProductModal = ({ product: initialProduct, isOpen, onClose, forceOpen = false }) => {
+  const navigate = useNavigate();
+  const { addToCart, buyNow, favorites, toggleFavorite, products } = useContext(ShopContext);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedScent, setSelectedScent] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
+  const [primaryImage, setPrimaryImage] = useState('');
+  const [fallbackImages, setFallbackImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageError, setImageError] = useState(false);
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  const isFavorite = favorites[currentProduct?.id];
+  const closeModalRef = useRef(onClose);
+
+  // Generate all possible image paths when product changes - memoized to avoid dependency issues
+  const generateImagePaths = useCallback(() => {
+    if (!currentProduct?.image) {
+      console.error(`Modal: Product ID ${currentProduct?.id} has missing or invalid image path`);
+      setImageError(true);
+      return;
+    }
+    
+    // Clean the original path by removing any 'public/' prefix
+    const cleanedOriginalPath = currentProduct.image.replace(/^public\/?/, '');
+    
+    // Get category
+    const category = currentProduct.category;
+    
+    // Extract the filename and extension from the path
+    const fileName = cleanedOriginalPath.split('/').pop();
+    const fileNameParts = fileName.split('.');
+    const baseName = fileNameParts.length > 1 ? fileNameParts.slice(0, -1).join('.') : fileName;
+    const originalExtension = fileNameParts.length > 1 ? fileNameParts.pop() : '';
+    
+    // Create paths with both lowercase and uppercase extensions to handle case sensitivity
+    const lowerExt = originalExtension.toLowerCase();
+    const upperExt = originalExtension.toUpperCase();
+    
+    // Build an array of paths to try
+    const paths = [];
+    
+    // Add direct paths for both local and GitHub Pages environments
+    paths.push(`/${cleanedOriginalPath}`);
+    paths.push(`/MHA-React/${cleanedOriginalPath}`);
+    
+    // Add paths with explicit case variations
+    if (lowerExt !== upperExt) {
+      // Replace extension with lowercase version
+      const lowerCasePath = cleanedOriginalPath.replace(new RegExp(`\\.${originalExtension}$`, 'i'), `.${lowerExt}`);
+      paths.push(`/${lowerCasePath}`);
+      paths.push(`/MHA-React/${lowerCasePath}`);
+      
+      // Replace extension with uppercase version
+      const upperCasePath = cleanedOriginalPath.replace(new RegExp(`\\.${originalExtension}$`, 'i'), `.${upperExt}`);
+      paths.push(`/${upperCasePath}`);
+      paths.push(`/MHA-React/${upperCasePath}`);
+    }
+    
+    // Add direct category paths
+    paths.push(`/store-img/${category}-img/${fileName}`);
+    paths.push(`/MHA-React/store-img/${category}-img/${fileName}`);
+    
+    // Add category paths with case variations
+    if (lowerExt !== upperExt) {
+      paths.push(`/store-img/${category}-img/${baseName}.${lowerExt}`);
+      paths.push(`/store-img/${category}-img/${baseName}.${upperExt}`);
+      paths.push(`/MHA-React/store-img/${category}-img/${baseName}.${lowerExt}`);
+      paths.push(`/MHA-React/store-img/${category}-img/${baseName}.${upperExt}`);
+    }
+    
+    // Set primary image path - use GitHub path if on GitHub Pages
+    setPrimaryImage(isGitHubPages ? paths[1] : paths[0]);
+    
+    // Set remaining paths as fallbacks, filtering out the primary path
+    setFallbackImages(paths.filter((path, index) => isGitHubPages ? index !== 1 : index !== 0));
+    
+    console.log(`Modal: Primary image path for ${currentProduct.name}:`, isGitHubPages ? paths[1] : paths[0]);
+  }, [currentProduct, isGitHubPages]);
+
+  // Effect to check for saved modal state and restore if needed
+  useEffect(() => {
+    const savedState = getModalState();
+    
+    if (forceOpen && savedState) {
+      // Restore from saved state
+      const restoredProduct = products.find(p => p.id === savedState.productId);
+      if (restoredProduct) {
+        console.log('Restoring modal state for product:', restoredProduct.name);
+        setCurrentProduct(restoredProduct);
+        setSelectedScent(savedState.selectedScent || '');
+        setQuantity(savedState.quantity || 1);
+        // Update the close handler to clear state on close
+        closeModalRef.current = () => {
+          clearModalState();
+          navigate('/');
+        };
+      } else {
+        clearModalState();
+      }
+    }
+  }, [forceOpen, products, navigate]);
+
+  // Effect to update currentProduct when initialProduct changes
+  useEffect(() => {
+    if (initialProduct && !forceOpen) {
+      // Find the latest version of the product from products array
+      const updatedProduct = products.find(p => p.id === initialProduct.id);
+      if (updatedProduct) {
+        setCurrentProduct(updatedProduct);
+      } else {
+        setCurrentProduct(initialProduct);
+      }
+      
+      // Reset image state
+      setImageError(false);
+      setCurrentImageIndex(0);
+      
+      // Set initial scent and quantity
+      setQuantity(1);
+      if (initialProduct.scents && initialProduct.scents.length > 0) {
+        setSelectedScent(initialProduct.scents[0]);
+      } else {
+        setSelectedScent('');
+      }
+    }
+  }, [initialProduct, products, forceOpen]);
+
+  // Effect to save modal state when it's open
+  useEffect(() => {
+    if (isOpen && currentProduct) {
+      console.log('Saving modal state for product:', currentProduct.name);
+      saveModalState({
+        productId: currentProduct.id,
+        selectedScent: selectedScent,
+        quantity: quantity,
+      });
+    }
+  }, [isOpen, currentProduct, selectedScent, quantity]);
+
+  // Call generate image paths when product changes
+  useEffect(() => {
+    if (currentProduct) {
+      generateImagePaths();
+    }
+  }, [currentProduct, generateImagePaths]);
+  
+  // Handle body scrolling when modal is open/closed
+  useEffect(() => {
+    if (isOpen && currentProduct) {
+      // Disable scrolling on body when modal is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable scrolling when modal is closed
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, currentProduct]);
+  
+  // If no product data is available, don't render anything
+  if (!initialProduct && !currentProduct) return null;
+
+  const handleQuantityChange = (amount) => {
+    const newQuantity = quantity + amount;
+    if (newQuantity > 0 && newQuantity <= currentProduct.stock) {
+      setQuantity(newQuantity);
+    }
+  };
+
+  const handleAddToCart = () => {
+    const success = addToCart(currentProduct.id, quantity, selectedScent, currentProduct.medium);
+    if (success) {
+      // Get the updated product with new stock level
+      const updatedProduct = products.find(p => p.id === currentProduct.id);
+      if (updatedProduct) {
+        setCurrentProduct(updatedProduct);
+      }
+      // Show confirmation popup
+      setShowConfirmation(true);
+      
+      // Add the popup to the DOM outside React's control
+      document.body.classList.add('showing-notification');
+    } else {
+      // Could add a visual feedback for failed add to cart
+      alert('Sorry, this product is out of stock or not enough quantity is available.');
+    }
+  };
+
+  const handleBuyNow = () => {
+    const success = buyNow(currentProduct.id, quantity, selectedScent, currentProduct.medium);
+    if (success) {
+      // Use the ref's current value for closing
+      closeModalRef.current();
+      // Navigate to cart page after adding to cart
+      navigate('/cart');
+    } else {
+      // Could add a visual feedback for failed add to cart
+      alert('Sorry, this product is out of stock or not enough quantity is available.');
+    }
+  };
+
+  const handleFavoriteClick = () => {
+    toggleFavorite(currentProduct.id);
+  };
+
+  const handleCloseConfirmation = () => {
+    setShowConfirmation(false);
+    document.body.classList.remove('showing-notification');
+  };
+
+  const handleViewCart = () => {
+    // Use the ref's current value for closing
+    closeModalRef.current();
+    // Navigate to cart page
+    navigate('/cart');
+  };
+
+  const handleContinueShopping = () => {
+    setShowConfirmation(false);
+    // Use the ref's current value for closing
+    closeModalRef.current();
+    // Navigate to home page
+    navigate('/');
+  };
+
+  // Handle the actual modal closure using our ref
+  const handleClose = (e) => {
+    if (e) e.stopPropagation();
+    closeModalRef.current();
+  };
+
+  return (
+    <>
+      {isOpen && (
+        <>
+          <div 
+            className="modal-overlay fade-in"
+            onClick={handleClose}
+          />
+          <div
+            className="modal-container scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="close-button" onClick={handleClose}>
+              <FaTimes />
+            </button>
+            
+            <div className="modal-content">
+              {currentImageIndex >= fallbackImages.length || imageError ? (
+                <div className="image-error-container">
+                  <FaImage className="image-error-icon" size={60} />
+                  <p>Image could not be loaded</p>
+                </div>
+              ) : (
+                <img 
+                  className="product-image" 
+                  key={`modal-${currentProduct.id}-${currentImageIndex}`}
+                  src={currentImageIndex === 0 ? primaryImage : fallbackImages[currentImageIndex - 1]} 
+                  alt={currentProduct.name} 
+                  style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
+                  onError={(e) => {
+                    console.error(`Failed to load modal image for ${currentProduct.name}: ${e.target.src}`);
+                    e.target.onerror = null; // Prevent infinite loop
+                    
+                    if (currentImageIndex < fallbackImages.length) {
+                      // Try next fallback immediately instead of state update
+                      e.target.src = fallbackImages[currentImageIndex];
+                      setCurrentImageIndex(prev => prev + 1);
+                    } else {
+                      setImageError(true);
+                    }
+                  }}
+                />
+              )}
+              
+              <div className="product-details">
+                <div className="product-header">
+                  <h2 className="product-name">{currentProduct.name}</h2>
+                </div>
+                
+                <p className="product-description">{currentProduct.description}</p>
+                
+                <div className="product-price-row">
+                  <div className="product-price">R{currentProduct.price}</div>
+                  <button 
+                    className={`favorite-button-modal ${isFavorite ? 'active' : ''}`}
+                    onClick={handleFavoriteClick}
+                    aria-label="Add to favorites"
+                  >
+                    <FaHeart />
+                    <span>{isFavorite ? 'In Favorites' : 'Add to Favorites'}</span>
+                  </button>
+                </div>
+                
+                {currentProduct.size && (
+                  <div className="product-attribute">
+                    <span className="attribute-label">Size:</span>
+                    <span className="attribute-value">{currentProduct.size}</span>
+                  </div>
+                )}
+                
+                {currentProduct.medium && (
+                  <div className="product-attribute">
+                    <span className="attribute-label">Medium:</span>
+                    <span className="attribute-value">{currentProduct.medium}</span>
+                  </div>
+                )}
+                
+                {currentProduct.scents && currentProduct.scents.length > 0 && (
+                  <div className="scent-selector">
+                    <span className="attribute-label">Scent:</span>
+                    <div className="scent-options">
+                      {currentProduct.scents.map(scent => (
+                        <button
+                          key={scent}
+                          className={`scent-option ${selectedScent === scent ? 'selected' : ''}`}
+                          onClick={() => setSelectedScent(scent)}
+                        >
+                          {scent}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="quantity-selector">
+                  <span className="attribute-label">Quantity:</span>
+                  <div className="quantity-controls">
+                    <button 
+                      className="quantity-button"
+                      onClick={() => handleQuantityChange(-1)}
+                      disabled={quantity <= 1}
+                    >
+                      <FaMinus />
+                    </button>
+                    <span className="quantity-value">{quantity}</span>
+                    <button 
+                      className="quantity-button"
+                      onClick={() => handleQuantityChange(1)}
+                      disabled={quantity >= currentProduct.stock}
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
+                  <span className="stock-info">{currentProduct.stock} available</span>
+                </div>
+                
+                <div className="modal-action-buttons">
+                  <button 
+                    className="add-to-cart-button"
+                    onClick={handleAddToCart}
+                    disabled={currentProduct.stock <= 0}
+                  >
+                    Add to Cart
+                  </button>
+                  <button 
+                    className="buy-now-button"
+                    onClick={handleBuyNow}
+                    disabled={currentProduct.stock <= 0}
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      
+      {showConfirmation && (
+        <div className="confirmation-popup">
+          <div className="confirmation-content">
+            <button className="close-confirmation" onClick={handleCloseConfirmation}>
+              <FaTimes />
+            </button>
+            <div className="confirmation-icon">
+              <FaCheck />
+            </div>
+            <h3>Added to Cart!</h3>
+            <p>"{currentProduct.name}" has been added to your cart.</p>
+            <div className="confirmation-buttons">
+              <button className="view-cart-button" onClick={handleViewCart}>
+                View Cart
+              </button>
+              <button className="continue-shopping-button" onClick={handleContinueShopping}>
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default ProductModal;
